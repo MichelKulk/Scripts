@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         voertuiglimitbalk (variabel balk)
 // @namespace    http://tampermonkey.net/
-// @version      1.2
+// @version      1.3
 // @description  try to take over the world!
 // @author       Michel
 // @match        https://www.meldkamerspel.com/missions/*
 // @updateURL    https://raw.githubusercontent.com/MichelKulk/Scripts/main/voertuiglimitbalk/voertuiglimitbalk%20(variabel%20balk).user.js
+// @downloadURL  https://raw.githubusercontent.com/MichelKulk/Scripts/main/voertuiglimitbalk/voertuiglimitbalk%20(variabel%20balk).user.js
 // @grant        none
 // ==/UserScript==
 
