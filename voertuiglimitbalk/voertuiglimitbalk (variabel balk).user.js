@@ -14,7 +14,7 @@
 
 // vul hier de aantal keer in dat de balk automatisch ingedrukt moet worden.
 
-    const numberOfTimes = 3; 
+    const numberOfTimes = 1; 
 
 // hieronder niks meer aanpassen!
 
