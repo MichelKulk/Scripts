@@ -5,6 +5,7 @@
 // @description  Controleer de leeftijd van meldingen en toon een rode bol voor niet-geplande meldingen.
 // @author       Michel
 // @match        https://www.meldkamerspel.com/missions/*
+// @updateURL    https://github.com/MichelKulk/Scripts/raw/main/tijdcontrole/Tijdcontrole%204.user.js
 // @grant        none
 // ==/UserScript==
 
