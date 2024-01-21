@@ -1,15 +1,12 @@
 // ==UserScript==
 // @name         Tijdcontrole 4
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.5
 // @description  Controleer de leeftijd van meldingen en toon een rode bol voor niet-geplande meldingen.
 // @author       Michel
 // @match        https://www.meldkamerspel.com/missions/*
 // @grant        none
 // ==/UserScript==
-
-var planned_alliance_chat_credits_setting = false; // Stel in of geplande inzetten in de chat moeten worden geplaatst
-var planned_alliance_chat_credits = 10000; // Aantal credits waarbij geplande inzetten in de chat moeten worden geplaatst
 
 (function() {
     'use strict';
@@ -63,14 +60,8 @@ function isPlannedMission() {
         return true;
     }
 
-    // Je bestaande logica voor het bepalen van geplande missies
-    if (planned_alliance_chat_credits_setting && planned_alliance_chat_credits >= alliance_credits) {
-        console.log("This is a planned mission.");
-        return true;
-    } else {
-        console.log("This is not a planned mission.");
-        return false;
-    }
+    console.log("This is not a planned mission.");
+    return false;
 }
 
 
