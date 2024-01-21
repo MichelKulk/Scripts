@@ -5,7 +5,7 @@
 // @description  try to take over the world!
 // @author       Michel
 // @match        https://www.meldkamerspel.com/missions/*
-// @updateURL    	https://github.com/MichelKulk/Scripts/raw/main/voertuiglimitbalk/voertuiglimitbalk%20(variabel%20balk).user.js
+// @updateURL    https://github.com/MichelKulk/Scripts/raw/main/voertuiglimitbalk/voertuiglimitbalk%20(variabel%20balk).user.js
 // @grant        none
 // ==/UserScript==
  
