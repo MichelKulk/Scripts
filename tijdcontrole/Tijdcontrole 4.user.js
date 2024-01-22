@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Tijdcontrole 4
 // @namespace    http://tampermonkey.net/
-// @version      1.6
-// @description  Controleer de leeftijd van meldingen en toon een rode bol voor niet-geplande meldingen.
+// @version      2.0
+// @description  Controleer de leeftijd van meldingen en toon een rode bol voor niet-geplande meldingen en controleer op aantal credits.
 // @author       Michel
 // @match        https://www.meldkamerspel.com/missions/*
 // @updateURL    https://github.com/MichelKulk/Scripts/raw/main/tijdcontrole/Tijdcontrole%204.user.js
@@ -11,18 +11,34 @@
 
 (function() {
     'use strict';
-console.clear()
+    console.clear();
     console.log("Tijdcontrole-script geladen");
 
+    // Functie om het aantal credits te controleren
+    function checkCredits() {
+        const creditsElement = document.getElementById('CreditsMissionheader');
+        if (creditsElement) {
+            const creditsText = creditsElement.textContent;
+            const credits = parseInt(creditsText.replace(/[^0-9]/g, ''));
+            console.log("Aantal credits:", credits);
+            return credits >= 5000;
+        }
+        return false;
+    }
+
+    // Functie om de datum te formatteren
     function formatDate(date) {
         const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' };
         return date.toLocaleDateString(undefined, options);
     }
 
+    // Functie om de tijd te formatteren
     function formatTime(date) {
         const options = { hour: '2-digit', minute: '2-digit' };
         return date.toLocaleTimeString(undefined, options);
     }
+
+
 
 function checkOldestMessageTime() {
     console.log("Checking oldest message time...");
@@ -113,8 +129,17 @@ function isPlannedMission() {
         document.body.appendChild(containerDiv);
     }
 
-    setTimeout(function() {
-        checkOldestMessageTime();
-    }, 500); // Wacht 500 milliseconden voordat de functie wordt uitgevoerd
 
+
+
+    // De rest van uw bestaande functies
+
+    // Hoofdfunctie die alles initieert
+    function init() {
+        if (checkCredits()) {
+            checkOldestMessageTime();
+        }
+    }
+
+    setTimeout(init, 500); // Wacht 500 milliseconden voordat de functie wordt uitgevoerd
 })();
