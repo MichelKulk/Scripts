@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Tijdcontrole 4
 // @namespace    http://tampermonkey.net/
-// @version      1.5
+// @version      1.6
 // @description  Controleer de leeftijd van meldingen en toon een rode bol voor niet-geplande meldingen.
 // @author       Michel
 // @match        https://www.meldkamerspel.com/missions/*
@@ -70,6 +70,9 @@ function isPlannedMission() {
     function showWarningBubble(oldestMessageTime) {
         // Voeg console.log-bericht toe voor de waarschuwingsbubbel
         console.log("Showing warning bubble for message shared at:", formatDate(oldestMessageTime), formatTime(oldestMessageTime));
+
+    var closingTime = new Date(oldestMessageTime.getTime() + 2 * 60 * 60 * 1000); // Sluittijd is 2 uur na de openingstijd
+
     var containerDiv = document.createElement('div');
     containerDiv.style.position = 'fixed';
     containerDiv.style.top = '7.5%';
@@ -102,7 +105,7 @@ function isPlannedMission() {
         labelText.style.padding = '5px';
         labelText.style.border = '1px solid red';
         labelText.style.fontSize = '12px';
-        labelText.innerText = 'GEEN sluitvoertuig sturen!';
+        labelText.innerText = 'GEEN sluitvoertuig sturen!\nGeopend: ' + formatTime(oldestMessageTime) + ' - Sluiten vanaf: ' + formatTime(closingTime);
 
         bubbleDiv.appendChild(warningText);
         containerDiv.appendChild(bubbleDiv);
