@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Tijdcontrole 4
 // @namespace    http://tampermonkey.net/
-// @version      2.0
+// @version      2.1
 // @description  Controleer de leeftijd van meldingen en toon een rode bol voor niet-geplande meldingen en controleer op aantal credits.
 // @author       Michel
 // @match        https://www.meldkamerspel.com/missions/*
@@ -38,8 +38,6 @@
         return date.toLocaleTimeString(undefined, options);
     }
 
-
-
 function checkOldestMessageTime() {
     console.log("Checking oldest message time...");
 
@@ -67,8 +65,6 @@ function checkOldestMessageTime() {
     }
 }
 
-
-
 function isPlannedMission() {
     // Controleer of er een countdown element op de pagina is
     var countdownElement = document.querySelector('[id^="mission_countdown_"]');
@@ -80,8 +76,6 @@ function isPlannedMission() {
     console.log("This is not a planned mission.");
     return false;
 }
-
-
 
     function showWarningBubble(oldestMessageTime) {
         // Voeg console.log-bericht toe voor de waarschuwingsbubbel
@@ -114,23 +108,21 @@ function isPlannedMission() {
         warningText.innerText = '!';
 
         var labelText = document.createElement('div');
+        var currentTime = new Date();
         labelText.style.backgroundColor = 'white';
         labelText.style.color = 'black';
         labelText.style.textAlign = 'center';
         labelText.style.marginTop = '1%';
         labelText.style.padding = '5px';
         labelText.style.border = '1px solid red';
-        labelText.style.fontSize = '12px';
-        labelText.innerText = 'GEEN sluitvoertuig sturen!\nGeopend: ' + formatTime(oldestMessageTime) + ' - Sluiten vanaf: ' + formatTime(closingTime);
+        labelText.style.fontSize = '16px';
+        labelText.innerHTML = 'GEEN sluitvoertuig sturen!<br>\nHuidige tijd: ' + formatTime(currentTime) + '\nGeopend: ' + formatTime(oldestMessageTime) + ' - <b> Sluiten vanaf: ' + formatTime(closingTime) + '</b>';
 
         bubbleDiv.appendChild(warningText);
         containerDiv.appendChild(bubbleDiv);
         containerDiv.appendChild(labelText);
         document.body.appendChild(containerDiv);
     }
-
-
-
 
     // De rest van uw bestaande functies
 
