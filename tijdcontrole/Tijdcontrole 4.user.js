@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Tijdcontrole 4
 // @namespace    http://tampermonkey.net/
-// @version      2.1
+// @version      2.5
 // @description  Controleer de leeftijd van meldingen en toon een rode bol voor niet-geplande meldingen en controleer op aantal credits.
 // @author       Michel
 // @match        https://www.meldkamerspel.com/missions/*
@@ -38,6 +38,8 @@
         return date.toLocaleTimeString(undefined, options);
     }
 
+
+
 function checkOldestMessageTime() {
     console.log("Checking oldest message time...");
 
@@ -62,8 +64,12 @@ function checkOldestMessageTime() {
         if (timeDifference < 2.0 && !isPlannedMission()) {
             showWarningBubble(oldestMessageTime);
         }
+    } else {
+        console.log("Geen berichten gevonden, waarschuwingsbubbel wordt niet getoond.");
     }
 }
+
+
 
 function isPlannedMission() {
     // Controleer of er een countdown element op de pagina is
@@ -77,20 +83,33 @@ function isPlannedMission() {
     return false;
 }
 
-    function showWarningBubble(oldestMessageTime) {
-        // Voeg console.log-bericht toe voor de waarschuwingsbubbel
-        console.log("Showing warning bubble for message shared at:", formatDate(oldestMessageTime), formatTime(oldestMessageTime));
+// Definieer containerDiv op een hoger niveau in de scope
+var containerDiv;
 
+function showWarningBubble(oldestMessageTime) {
+    if (!oldestMessageTime) {
+        console.error('oldestMessageTime is niet gedefinieerd voor showWarningBubble');
+        return;
+    }
     var closingTime = new Date(oldestMessageTime.getTime() + 2 * 60 * 60 * 1000); // Sluittijd is 2 uur na de openingstijd
 
-    var containerDiv = document.createElement('div');
+    console.log("Showing warning bubble for message shared at:", formatDate(oldestMessageTime), formatTime(oldestMessageTime));
+
+    // Laad eerder opgeslagen positie indien beschikbaar
+    var savedLeft = localStorage.getItem('popupLeft');
+    var savedTop = localStorage.getItem('popupTop');
+
+    // Maak de containerDiv en pas de opgeslagen of standaard positie toe
+    containerDiv = document.createElement('div');
     containerDiv.style.position = 'fixed';
-    containerDiv.style.top = '7.5%';
-    containerDiv.style.left = '54%';
+    containerDiv.style.left = savedLeft || '54%';
+    containerDiv.style.top = savedTop || '7.5%';
     containerDiv.style.transform = 'translate(-50%, -50%)';
     containerDiv.style.display = 'flex';
     containerDiv.style.alignItems = 'center';
-    containerDiv.style.zIndex = '1000'; // Hoog z-index waarde om ervoor te zorgen dat het bovenop komt
+    containerDiv.style.zIndex = '1000';
+    containerDiv.style.minWidth = "600px";
+    containerDiv.onmousedown = dragMouseDown;
 
 
         var bubbleDiv = document.createElement('div');
@@ -116,22 +135,88 @@ function isPlannedMission() {
         labelText.style.padding = '5px';
         labelText.style.border = '1px solid red';
         labelText.style.fontSize = '16px';
-        labelText.innerHTML = 'GEEN sluitvoertuig sturen!<br>\nHuidige tijd: ' + formatTime(currentTime) + '\nGeopend: ' + formatTime(oldestMessageTime) + ' - <b> Sluiten vanaf: ' + formatTime(closingTime) + '</b>';
+        labelText.innerHTML = 'GEEN sluitvoertuig sturen!<br>\nHuidige tijd: ' + formatTime(currentTime) + ' - \nGeopend: ' + formatTime(oldestMessageTime) + ' - <b> Sluiten vanaf: ' + formatTime(closingTime) + '</b>';
 
         bubbleDiv.appendChild(warningText);
         containerDiv.appendChild(bubbleDiv);
         containerDiv.appendChild(labelText);
-        document.body.appendChild(containerDiv);
+
+    document.body.appendChild(containerDiv);
+
     }
 
+
+let dragOffsetX, dragOffsetY;
+
+function dragMouseDown(e) {
+    e = e || window.event;
+    if (e.button === 0) { // Controleer of de linkermuisknop wordt gebruikt
+        e.preventDefault();
+        console.log("Mousedown event gestart"); // Log wanneer mousedown event start
+        // Sla de beginpositie van de muis op
+        dragOffsetX = e.clientX;
+        dragOffsetY = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+    }
+}
+
+
+function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    console.log("Element wordt gesleept"); // Log tijdens het slepen
+
+    // Bereken de nieuwe positie van de cursor
+    let posX = dragOffsetX - e.clientX;
+    let posY = dragOffsetY - e.clientY;
+    dragOffsetX = e.clientX;
+    dragOffsetY = e.clientY;
+
+    if (typeof containerDiv === 'undefined') {
+        console.error('containerDiv is niet gedefinieerd');
+        return; // Dit moet binnen de if-statement blijven
+    }
+
+    // Zet het element op de nieuwe positie
+    containerDiv.style.top = (containerDiv.offsetTop - posY) + "px";
+    containerDiv.style.left = (containerDiv.offsetLeft - posX) + "px";
+}
+
+function closeDragElement() {
+    console.log("Muis losgelaten, stoppen met slepen");
+    document.onmouseup = null;
+    document.onmousemove = null;
+
+    // Zorg ervoor dat we de containerDiv hebben voordat we verder gaan.
+    if (typeof containerDiv === 'undefined') {
+        console.error('containerDiv is niet gedefinieerd');
+        return;
+    }
+
+    // Opslaan van de positie in localStorage
+    localStorage.setItem('popupLeft', containerDiv.style.left);
+    localStorage.setItem('popupTop', containerDiv.style.top);
+}
     // De rest van uw bestaande functies
 
     // Hoofdfunctie die alles initieert
-    function init() {
-        if (checkCredits()) {
-            checkOldestMessageTime();
-        }
+function init() {
+    // Controleren of er opgeslagen waarden zijn voor de positie van de popup
+    var savedLeft = localStorage.getItem('popupLeft');
+    var savedTop = localStorage.getItem('popupTop');
+
+    // Als er opgeslagen waarden zijn, gebruik deze om de popup positie in te stellen
+    if (savedLeft && savedTop) {
+        showWarningBubble(); // Je kunt hier de juiste parameter doorgeven indien nodig
     }
+
+    // Voer je standaard controle voor credits en oudste berichttijd uit
+    if (checkCredits()) {
+        checkOldestMessageTime();
+    }
+}
+
 
     setTimeout(init, 500); // Wacht 500 milliseconden voordat de functie wordt uitgevoerd
 })();
