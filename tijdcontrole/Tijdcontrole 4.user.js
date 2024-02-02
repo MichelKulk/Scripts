@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Tijdcontrole 4
 // @namespace    http://tampermonkey.net/
-// @version      2.5
+// @version      2.6
 // @description  Controleer de leeftijd van meldingen en toon een rode bol voor niet-geplande meldingen en controleer op aantal credits.
 // @author       Michel
 // @match        https://www.meldkamerspel.com/missions/*
@@ -102,8 +102,8 @@ function showWarningBubble(oldestMessageTime) {
     // Maak de containerDiv en pas de opgeslagen of standaard positie toe
     containerDiv = document.createElement('div');
     containerDiv.style.position = 'fixed';
-    containerDiv.style.left = savedLeft || '54%';
-    containerDiv.style.top = savedTop || '7.5%';
+    containerDiv.style.left = savedLeft || '50%';
+    containerDiv.style.top = savedTop || '50%';
     containerDiv.style.transform = 'translate(-50%, -50%)';
     containerDiv.style.display = 'flex';
     containerDiv.style.alignItems = 'center';
@@ -168,8 +168,8 @@ function elementDrag(e) {
     console.log("Element wordt gesleept"); // Log tijdens het slepen
 
     // Bereken de nieuwe positie van de cursor
-    let posX = dragOffsetX - e.clientX;
-    let posY = dragOffsetY - e.clientY;
+    let posX = e.clientX - dragOffsetX;
+    let posY = e.clientY - dragOffsetY;
     dragOffsetX = e.clientX;
     dragOffsetY = e.clientY;
 
@@ -179,8 +179,8 @@ function elementDrag(e) {
     }
 
     // Zet het element op de nieuwe positie
-    containerDiv.style.top = (containerDiv.offsetTop - posY) + "px";
-    containerDiv.style.left = (containerDiv.offsetLeft - posX) + "px";
+    containerDiv.style.top = (containerDiv.offsetTop + posY) + 'px';
+    containerDiv.style.left = (containerDiv.offsetLeft + posX) + 'px';
 }
 
 function closeDragElement() {
@@ -195,8 +195,9 @@ function closeDragElement() {
     }
 
     // Opslaan van de positie in localStorage
-    localStorage.setItem('popupLeft', containerDiv.style.left);
-    localStorage.setItem('popupTop', containerDiv.style.top);
+ localStorage.setItem('popupLeft', containerDiv.style.left);
+localStorage.setItem('popupTop', containerDiv.style.top);
+
 }
     // De rest van uw bestaande functies
 
